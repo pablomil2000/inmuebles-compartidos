@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="40" viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M20 5L35 30H5L20 5Z" fill="#F4B6C4"/>
+  <text x="45" y="20" font-family="Arial" font-size="20" fill="#333333">Inmuebles</text>
+  <text x="45" y="35" font-family="Arial" font-size="20" fill="#333333">compartidos</text>
+</svg>

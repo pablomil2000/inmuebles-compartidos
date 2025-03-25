@@ -1,0 +1,274 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+export async function getStaticPaths() {
+  const rooms = await getCollection('rooms');
+  return rooms.map((room) => ({
+    params: { slug: room.slug },
+    props: { room },
+  }));
+}
+
+const { room } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={room.data.title}>
+  <main>
+    <div class="room-detail">
+      <div class="gallery">
+        <div class="main-image">
+          <img 
+            src={room.data.mainImage} 
+            alt={room.data.title}
+            id="mainImage"
+            class="featured-image"
+          >
+        </div>
+        <div class="thumbnails">
+          {room.data.gallery.map((image, index) => (
+            <img
+              src={image}
+              alt={`${room.data.title} - Imagen ${index + 1}`}
+              class="thumbnail"
+              data-image={image}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div class="room-info">
+        <div class="info-card">
+          <h1>{room.data.title}</h1>
+          <p class="price">
+            {room.data.price.toLocaleString('es-ES', {
+              style: 'currency',
+              currency: 'EUR',
+            })} /mes
+          </p>
+          <p class="location">{room.data.location}</p>
+
+          <div class="features">
+            <h2>Características</h2>
+            <ul>
+              <li>
+                <span class="feature-icon">🛏️</span>
+                Habitación {room.data.features.type}
+              </li>
+              <li>
+                <span class="feature-icon">🚿</span>
+                Baño {room.data.features.bathroom}
+              </li>
+              <li>
+                <span class="feature-icon">📏</span>
+                {room.data.squareMeters}m²
+              </li>
+              {room.data.features.desk && (
+                <li>
+                  <span class="feature-icon">💻</span>
+                  Escritorio
+                </li>
+              )}
+              {room.data.features.tv && (
+                <li>
+                  <span class="feature-icon">📺</span>
+                  TV
+                </li>
+              )}
+              {room.data.features.wifi && (
+                <li>
+                  <span class="feature-icon">📡</span>
+                  WiFi
+                </li>
+              )}
+              {room.data.features.airConditioning && (
+                <li>
+                  <span class="feature-icon">❄️</span>
+                  Aire acondicionado
+                </li>
+              )}
+              {room.data.features.heating && (
+                <li>
+                  <span class="feature-icon">🔥</span>
+                  Calefacción
+                </li>
+              )}
+            </ul>
+          </div>
+
+          <div class="description" set:html={room.body}>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .room-detail {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .gallery {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .main-image {
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .featured-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+  }
+
+  .thumbnails {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  .thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .thumbnail:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+
+  .room-info {
+    color: #333;
+  }
+
+  .info-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+
+  .price {
+    font-size: 2rem;
+    color: rgb(var(--accent));
+    margin: 0 0 0.5rem 0;
+  }
+
+  .location {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0 0 2rem 0;
+  }
+
+  .features {
+    background: #f5f5f5;
+    border: 1px solid #666;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .features h2 {
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+
+  .features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    color: #444;
+  }
+
+  .features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .feature-icon {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    line-height: 1.6;
+    color: #444;
+  }
+
+  .description :global(h2) {
+    color: #333;
+    margin-top: 1.5rem;
+  }
+
+  .description :global(p) {
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .room-detail {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery {
+      position: relative;
+      top: 0;
+    }
+
+    .featured-image {
+      height: 300px;
+    }
+  }
+</style>
+
+<script>
+  // Función para cambiar la imagen principal
+  function initializeGallery() {
+    const mainImage = document.getElementById('mainImage') as HTMLImageElement;
+    const thumbnails = document.querySelectorAll('.thumbnail');
+
+    thumbnails.forEach(thumbnail => {
+      thumbnail.addEventListener('click', () => {
+        const newImageSrc = thumbnail.getAttribute('data-image');
+        if (newImageSrc && mainImage) {
+          // Aplicar una transición suave
+          mainImage.style.opacity = '0';
+          setTimeout(() => {
+            mainImage.src = newImageSrc;
+            mainImage.style.opacity = '1';
+          }, 300);
+        }
+      });
+    });
+  }
+
+  // Inicializar la galería cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', initializeGallery);
+</script>

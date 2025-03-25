@@ -1,0 +1,289 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
+
+export async function getStaticPaths() {
+  const properties = await getCollection('properties');
+  return properties.map((property) => ({
+    params: { slug: property.slug },
+    props: { property },
+  }));
+}
+
+const { property } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// Combinar la imagen principal con la galería para tener todas las imágenes
+const allImages = [property.data.mainImage, ...property.data.gallery];
+---
+
+<Layout title={property.data.title}>
+  <main>
+    <div class="property-detail">
+      <div class="gallery">
+        <div class="main-image">
+          <img 
+            src={allImages[0]} 
+            alt={property.data.title}
+            id="mainImage"
+            class="featured-image"
+          >
+        </div>
+        <div class="thumbnails" id="thumbnailsContainer">
+          {allImages.map((image, index) => (
+            <img
+              src={image}
+              alt={`${property.data.title} - Imagen ${index + 1}`}
+              class={`thumbnail ${index === 0 ? 'hidden' : ''}`}
+              data-index={index}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div class="property-info">
+        <div class="info-card">
+          <h1>{property.data.title}</h1>
+          <p class="price">
+            {property.data.price.toLocaleString('es-ES', {
+              style: 'currency',
+              currency: 'EUR',
+            })}
+          </p>
+          <p class="location">{property.data.location}</p>
+
+          <div class="features">
+            <h2>Características</h2>
+            <ul>
+              <li>
+                <span class="feature-icon">🛏️</span>
+                {property.data.features.bedrooms} Dormitorios
+              </li>
+              <li>
+                <span class="feature-icon">🚿</span>
+                {property.data.features.bathrooms} Baños
+              </li>
+              <li>
+                <span class="feature-icon">📏</span>
+                {property.data.squareMeters}m²
+              </li>
+              {property.data.features.garage && (
+                <li>
+                  <span class="feature-icon">🚗</span>
+                  Garaje
+                </li>
+              )}
+              {property.data.features.pool && (
+                <li>
+                  <span class="feature-icon">🏊‍♂️</span>
+                  Piscina
+                </li>
+              )}
+              {property.data.features.garden && (
+                <li>
+                  <span class="feature-icon">🌳</span>
+                  Jardín
+                </li>
+              )}
+            </ul>
+          </div>
+
+          <div class="description" set:html={property.body}>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .property-detail {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .gallery {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .main-image {
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f0f0f0;
+  }
+
+  .featured-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+  }
+
+  .thumbnails {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .thumbnail {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .thumbnail:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .thumbnail.hidden {
+    display: none;
+  }
+
+  .property-info {
+    color: #333;
+  }
+
+  .info-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+
+  .price {
+    font-size: 2rem;
+    color: rgb(var(--accent));
+    margin: 0 0 0.5rem 0;
+  }
+
+  .location {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 0 0 2rem 0;
+  }
+
+  .features {
+    border: 1px solid #666;
+    background: #f5f5f5;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .features h2 {
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+
+  .features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    color: #444;
+  }
+
+  .features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .feature-icon {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    line-height: 1.6;
+    color: #444;
+  }
+
+  .description :global(h2) {
+    color: #333;
+    margin-top: 1.5rem;
+  }
+
+  .description :global(p) {
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .property-detail {
+      grid-template-columns: 1fr;
+    }
+
+    .gallery {
+      position: relative;
+      top: 0;
+    }
+
+    .featured-image {
+      height: 300px;
+    }
+  }
+</style>
+
+<script>
+  function initializeGallery() {
+    const mainImage = document.getElementById('mainImage') as HTMLImageElement;
+    const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+
+    if (!mainImage || !thumbnailsContainer) return;
+
+    let currentIndex = 0;
+
+    thumbnailsContainer.addEventListener('click', (e) => {
+      const clickedImage = e.target as HTMLImageElement;
+      if (!clickedImage.classList.contains('thumbnail')) return;
+
+      const newIndex = parseInt(clickedImage.dataset.index || '0');
+      if (newIndex === currentIndex) return;
+
+      // Animar la transición de la imagen principal
+      mainImage.style.opacity = '0';
+      
+      setTimeout(() => {
+        // Mostrar la imagen clicada en la vista principal
+        mainImage.src = clickedImage.src;
+        mainImage.style.opacity = '1';
+
+        // Ocultar la miniatura de la nueva imagen principal
+        clickedImage.classList.add('hidden');
+
+        // Mostrar la miniatura de la imagen anterior
+        const previousMainThumbnail = thumbnailsContainer.querySelector(`[data-index="${currentIndex}"]`);
+        if (previousMainThumbnail) {
+          previousMainThumbnail.classList.remove('hidden');
+        }
+
+        currentIndex = newIndex;
+      }, 300);
+    });
+  }
+
+  // Asegurarnos de que el script se ejecute después de la navegación con View Transitions
+  document.addEventListener('astro:page-load', initializeGallery);
+  // También mantener el evento DOMContentLoaded para la carga inicial
+  document.addEventListener('DOMContentLoaded', initializeGallery);
+</script>

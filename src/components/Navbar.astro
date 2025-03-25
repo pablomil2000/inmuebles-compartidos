@@ -1,0 +1,164 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const currentPath = Astro.url.pathname;
+const basePath = lang === 'en' ? '/en' : '';
+
+// Función para generar la URL alternativa
+function getAlternateUrl(currentPath: string, currentLang: string): string {
+  if (currentLang === 'en') {
+    // Si estamos en inglés, quitamos /en/ del path
+    return currentPath.replace('/en/', '/');
+  } else {
+    // Si estamos en español, añadimos /en/ al path
+    return currentPath.replace('/', '/en/');
+  }
+}
+
+const alternateUrl = getAlternateUrl(currentPath, lang);
+---
+
+<nav class:list={["navbar"]}>
+  <div class="nav-content">
+    <a href={`${basePath}/`} class="logo">
+      <img src="/logo.svg" alt="Logo" width="150" height="50">
+    </a>
+
+    <div class="nav-links">
+      <a href={`${basePath}/`} class:list={['nav-link', { active: currentPath === `${basePath}/` }]}>
+        {t.nav.home}
+      </a>
+      <a href={`${basePath}/properties`} class:list={['nav-link', { active: currentPath.includes('/properties') }]}>
+        {t.nav.properties}
+      </a>
+      <a href={`${basePath}/rooms`} class:list={['nav-link', { active: currentPath.includes('/rooms') }]}>
+        {t.nav.rooms}
+        </a>
+      <a href={`${basePath}/contact`} class:list={['nav-link', { active: currentPath.includes('/contact') }]}>
+        {t.nav.contact}
+      </a>
+    </div>
+
+    <div class="language-switcher">
+      <a href={lang === 'en' ? currentPath.replace('/en', '') : alternateUrl} class:list={["flag-link", { active: lang === 'es' }]} aria-label="Español">
+        <img src="/images/flags/es.svg" alt="Español" class="flag-icon" width="24" height="16">
+      </a>
+      <a href={lang === 'es' ? alternateUrl : currentPath} class:list={["flag-link", { active: lang === 'en' }]} aria-label="English">
+        <img src="/images/flags/en.svg" alt="English" class="flag-icon" width="24" height="16">
+      </a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: all 0.3s ease;
+  }
+
+  .navbar.scrolled {
+    border-bottom: 2px solid rgb(var(--accent-light));
+  }
+
+  .nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: rgb(var(--accent));
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .nav-link {
+    color: #666;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .nav-link:hover {
+    color: rgb(var(--accent));
+  }
+
+  .nav-link.active {
+    color: rgb(var(--accent));
+  }
+
+  .language-switcher {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .flag-link {
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    padding: 4px;
+    border-radius: 4px;
+  }
+
+  .flag-link:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .flag-link.active {
+    opacity: 1;
+  }
+
+  .flag-icon {
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .nav-content {
+      padding: 1rem;
+    }
+
+    .nav-links {
+      gap: 1rem;
+    }
+
+    .nav-link {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<script>
+  // Add scroll effect
+  const navbar = document.querySelector('.navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 0) {
+      navbar?.classList.add('scrolled');
+    } else {
+      navbar?.classList.remove('scrolled');
+    }
+  });
+</script>

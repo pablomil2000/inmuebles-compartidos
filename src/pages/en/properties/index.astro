@@ -1,0 +1,52 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PropertyCard from '../../../components/PropertyCard.astro';
+import { getCollection } from 'astro:content';
+import { translations } from '../../../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+
+const properties = await getCollection('properties');
+const t = translations.en;
+---
+
+<Layout title={t['nav.properties']}>
+  <div class="properties-container">
+    <h1 class="title">{t['nav.properties']}</h1>
+    
+    <div class="properties-grid">
+      {properties.map((property: CollectionEntry<'properties'>) => (
+        <PropertyCard property={property} />
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .properties-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .properties-container {
+      padding: 1rem;
+    }
+
+    .properties-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
