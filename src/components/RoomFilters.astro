@@ -50,16 +50,16 @@ const t = useTranslations(lang);
     <div class="filter-group">
       <h3>{t.rooms.type}</h3>
       <div class="checkbox-group">
-        <label class="checkbox-label">
-          <input type="checkbox" name="room_type" value="individual" class="room-type-filter">
+        <label>
+          <input type="checkbox" name="room_type" value="individual">
           {t.rooms.individual}
         </label>
-        <label class="checkbox-label">
-          <input type="checkbox" name="room_type" value="shared" class="room-type-filter">
+        <label>
+          <input type="checkbox" name="room_type" value="shared">
           {t.rooms.shared}
         </label>
-        <label class="checkbox-label">
-          <input type="checkbox" name="room_type" value="suite" class="room-type-filter">
+        <label>
+          <input type="checkbox" name="room_type" value="suite">
           {t.rooms.suite}
         </label>
       </div>
@@ -68,12 +68,12 @@ const t = useTranslations(lang);
     <div class="filter-group">
       <h3>{t.rooms.bathroomType}</h3>
       <div class="checkbox-group">
-        <label class="checkbox-label">
-          <input type="checkbox" name="bathroom" value="private_bathroom" class="bathroom-filter">
+        <label>
+          <input type="checkbox" name="bathroom" value="private_bathroom">
           {t.rooms.privateBathroom}
         </label>
-        <label class="checkbox-label">
-          <input type="checkbox" name="bathroom" value="shared_bathroom" class="bathroom-filter">
+        <label>
+          <input type="checkbox" name="bathroom" value="shared_bathroom">
           {t.rooms.sharedBathroom}
         </label>
       </div>
@@ -83,7 +83,7 @@ const t = useTranslations(lang);
       <h3>{t.filters.features}</h3>
       <div class="checkbox-group">
         {features.map(feature => (
-          <label class="checkbox-label">
+          <label>
             <input 
               type="checkbox" 
               name="features" 
@@ -94,7 +94,9 @@ const t = useTranslations(lang);
         ))}
       </div>
     </div>
-
+    <div class="filter-group">
+      <button type="button" class="apply-filters">{t.filters.apply}</button>
+    </div>
   </form>
 </div>
 
@@ -169,25 +171,18 @@ const t = useTranslations(lang);
     cursor: pointer;
   }
 
-  .checkbox-label input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-  }
-
-  .apply-filters {
-    background: rgb(var(--accent));
+  .apply-filters-btn {
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 0.75rem;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
 
-  .apply-filters:hover {
-    background: rgb(var(--accent-dark));
+  .apply-filters-btn:hover {
+    background-color: #0056b3;
   }
 
   @media (max-width: 768px) {
@@ -209,12 +204,35 @@ const t = useTranslations(lang);
   .property-card.hidden {
     display: none;
   }
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  .apply-filters {
+    background: rgb(var(--accent));
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .apply-filters:hover {
+    background: rgb(var(--accent-dark));
+  }
+
 </style>
 
 <script>
   function initializeFilters() {
     const form = document.getElementById('roomFilters') as HTMLFormElement | null;
     const rooms = document.querySelectorAll('.room-card');
+    const applyButton = form?.querySelector('.apply-filters') as HTMLButtonElement | null;
 
     if (!form || !rooms.length) return;
 
@@ -231,6 +249,8 @@ const t = useTranslations(lang);
         bathrooms: Array.from(form.querySelectorAll('input[name="bathroom"]:checked') as NodeListOf<HTMLInputElement>).map(input => input.value),
         features: Array.from(form.querySelectorAll('input[name="features"]:checked') as NodeListOf<HTMLInputElement>).map(input => input.value)
       };
+
+      console.table(filters);
 
       rooms.forEach(room => {
         const price = Number(room.getAttribute('data-price')) || 0;
@@ -263,17 +283,34 @@ const t = useTranslations(lang);
       });
     }
 
-    // Agregar eventos para todos los inputs
+    // Agregar eventos para los inputs
     if (form) {
       const inputs = form.querySelectorAll('input');
       
       inputs.forEach(input => {
-        input.addEventListener('change', applyFilters);
+        // Mantener el estado de los inputs pero no aplicar los filtros automáticamente
+        input.addEventListener('change', () => {
+          // Solo actualizamos el estado visual de los inputs
+          if (input.type === 'checkbox') {
+            input.checked = !input.checked;
+          }
+        });
         
         if (input.type === 'number') {
-          input.addEventListener('input', applyFilters);
+          input.addEventListener('input', () => {
+            // Solo actualizamos el valor del input
+            input.value = input.value;
+          });
         }
       });
+
+      // Agregar evento al botón de aplicar
+      if (applyButton) {
+        applyButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          applyFilters();
+        });
+      }
 
       // Inicializar los valores de los rangos de precio
       const minPriceInput = form.querySelector('#minPrice') as HTMLInputElement | null;
@@ -288,9 +325,6 @@ const t = useTranslations(lang);
           minPriceInput.max = maxPriceInput.value;
         });
       }
-
-      // Aplicar los filtros inicialmente
-      applyFilters();
     }
   }
 

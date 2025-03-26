@@ -23,6 +23,7 @@ interface Translations {
     air_conditioning: string;
     heating: string;
     reset: string;
+    apply: string;
     garage: string;
     pool: string;
     garden: string;
@@ -89,6 +90,7 @@ export const translations: Record<string, Translations> = {
       air_conditioning: 'Aire acondicionado',
       heating: 'Calefacción',
       reset: 'Reiniciar filtros',
+      apply: 'Aplicar filtros',
       garage: 'Garaje',
       pool: 'Piscina',
       garden: 'Jardín',
@@ -146,6 +148,7 @@ export const translations: Record<string, Translations> = {
       air_conditioning: 'Air Conditioning',
       heating: 'Heating',
       reset: 'Reset Filters',
+      apply: 'Apply Filters',
       garage: 'Garage',
       pool: 'Pool',
       garden: 'Garden',

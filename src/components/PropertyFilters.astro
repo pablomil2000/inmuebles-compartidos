@@ -87,7 +87,7 @@ const t = useTranslations(lang);
       <h3>Características</h3>
       <div class="checkbox-group">
         {features.map(feature => (
-          <label class="checkbox-label">
+          <label>
             <input 
               type="checkbox" 
               name="features" 
@@ -99,9 +99,9 @@ const t = useTranslations(lang);
       </div>
     </div>
 
-    <button type="submit" class="apply-filters">
-      {t.filters.reset}
-    </button>
+    <div class="filter-group">
+      <button type="button" class="apply-filters">{t.filters.apply}</button>
+    </div>
   </form>
 </div>
 
@@ -216,34 +216,44 @@ const t = useTranslations(lang);
   function initializeFilters() {
     const form = document.getElementById('propertyFilters') as HTMLFormElement;
     const properties = document.querySelectorAll('.property-card');
+    const applyButton = form?.querySelector('.apply-filters') as HTMLButtonElement | null;
 
     if (!form || !properties.length) return;
 
     // Función para aplicar los filtros
     function applyFilters() {
+      if (!form) return;
+
       const formData = new FormData(form);
       
       const filters = {
         minPrice: Number(formData.get('minPrice')) || 0,
         maxPrice: Number(formData.get('maxPrice')) || Infinity,
-        bedrooms: formData.getAll('bedrooms').map(Number),
-        bathrooms: formData.getAll('bathrooms').map(Number),
-        features: formData.getAll('features')
+        bedrooms: Array.from(form.querySelectorAll('input[name="bedrooms"]:checked') as NodeListOf<HTMLInputElement>).map(input => Number(input.value)),
+        bathrooms: Array.from(form.querySelectorAll('input[name="bathrooms"]:checked') as NodeListOf<HTMLInputElement>).map(input => Number(input.value)),
+        features: Array.from(form.querySelectorAll('input[name="features"]:checked') as NodeListOf<HTMLInputElement>).map(input => input.value)
       };
+
+      console.table(filters);
 
       properties.forEach(property => {
         const price = Number(property.getAttribute('data-price')) || 0;
-        const bedrooms = Number(property.getAttribute('data-bedrooms')) || 0;
-        const bathrooms = Number(property.getAttribute('data-bathrooms')) || 0;
-        const propertyFeatures = JSON.parse(property.getAttribute('data-features') || '[]');
+        const beds = Number(property.getAttribute('data-bedrooms')) || 0;
+        const baths = Number(property.getAttribute('data-bathrooms')) || 0;
+        const propertyFeatures = JSON.parse(property.getAttribute('data-features') || '{}');
 
         const matchesPrice = price >= filters.minPrice && price <= filters.maxPrice;
-        const matchesBedrooms = filters.bedrooms.length === 0 || 
-          filters.bedrooms.includes(bedrooms);
-        const matchesBathrooms = filters.bathrooms.length === 0 || 
-          filters.bathrooms.includes(bathrooms);
+        const matchesBedrooms = filters.bedrooms.length === 0 || filters.bedrooms.includes(beds);
+        const matchesBathrooms = filters.bathrooms.length === 0 || filters.bathrooms.includes(baths);
         const matchesFeatures = filters.features.length === 0 || 
-          filters.features.every(feature => propertyFeatures.includes(feature));
+          filters.features.every(feature => {
+            switch(feature) {
+              case 'garage': return propertyFeatures.garage;
+              case 'pool': return propertyFeatures.pool;
+              case 'garden': return propertyFeatures.garden;
+              default: return false;
+            }
+          });
 
         const element = property as HTMLElement;
         if (matchesPrice && matchesBedrooms && matchesBathrooms && matchesFeatures) {
@@ -254,33 +264,49 @@ const t = useTranslations(lang);
       });
     }
 
-    // Agregar eventos para todos los inputs
-    form.querySelectorAll('input').forEach(input => {
-      input.addEventListener('change', applyFilters);
-      // Para los rangos de precio, también aplicar cuando se suelta el mouse
-      if (input.type === 'number') {
-        input.addEventListener('input', applyFilters);
+    // Agregar eventos para los inputs
+    if (form) {
+      const inputs = form.querySelectorAll('input');
+      
+      inputs.forEach(input => {
+        // Mantener el estado de los inputs pero no aplicar los filtros automáticamente
+        input.addEventListener('change', () => {
+          // Solo actualizamos el estado visual de los inputs
+          if (input.type === 'checkbox') {
+            input.checked = !input.checked;
+          }
+        });
+        
+        if (input.type === 'number') {
+          input.addEventListener('input', () => {
+            // Solo actualizamos el valor del input
+            input.value = input.value;
+          });
+        }
+      });
+
+      // Agregar evento al botón de aplicar
+      if (applyButton) {
+        applyButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          applyFilters();
+        });
       }
-    });
 
-    // Inicializar los valores de los rangos de precio
-    const minPriceInput = form.querySelector('#minPrice') as HTMLInputElement;
-    const maxPriceInput = form.querySelector('#maxPrice') as HTMLInputElement;
+      // Inicializar los valores de los rangos de precio
+      const minPriceInput = form.querySelector('#minPrice') as HTMLInputElement | null;
+      const maxPriceInput = form.querySelector('#maxPrice') as HTMLInputElement | null;
 
-    minPriceInput?.addEventListener('change', () => {
-      if (maxPriceInput) {
-        maxPriceInput.min = minPriceInput.value;
+      if (minPriceInput && maxPriceInput) {
+        minPriceInput.addEventListener('change', () => {
+          maxPriceInput.min = minPriceInput.value;
+        });
+
+        maxPriceInput.addEventListener('change', () => {
+          minPriceInput.max = maxPriceInput.value;
+        });
       }
-    });
-
-    maxPriceInput?.addEventListener('change', () => {
-      if (minPriceInput) {
-        minPriceInput.max = maxPriceInput.value;
-      }
-    });
-
-    // Aplicar los filtros inicialmente
-    applyFilters();
+    }
   }
 
   // Inicializar los filtros cuando el DOM esté cargado
