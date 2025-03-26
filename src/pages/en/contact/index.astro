@@ -1,0 +1,210 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={t.nav.contact}>
+  <div class="contact-container">
+    <h1 class="title">{t.nav.contact}</h1>
+
+    <div class="contact-content">
+      <div class="contact-info">
+        <h2>{t.contact.info_title}</h2>
+        <div class="info-items">
+          <div class="info-item">
+            <span class="icon">📍</span>
+            <div>
+              <h3>{t.contact.address}</h3>
+              <p>Calle Principal 123</p>
+              <p>28001 Madrid, España</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <span class="icon">📞</span>
+            <div>
+              <h3>{t.contact.phone}</h3>
+              <p>+34 912 345 678</p>
+              <p>+34 666 777 888</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <span class="icon">✉️</span>
+            <div>
+              <h3>{t.contact.email}</h3>
+              <p>info@inmuebles.com</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <span class="icon">⏰</span>
+            <div>
+              <h3>{t.contact.hours}</h3>
+              <p>{t.contact.schedule}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h2>{t.contact.form_title}</h2>
+        <form id="contactForm" class="form" method="POST">
+          <div class="form-group">
+            <label for="name">{t.contact.name}</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">{t.contact.email_field}</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">{t.contact.phone_field}</label>
+            <input type="tel" id="phone" name="phone">
+          </div>
+
+          <div class="form-group">
+            <label for="subject">{t.contact.subject}</label>
+            <input type="text" id="subject" name="subject" required>
+          </div>
+
+          <div class="form-group">
+            <label for="message">{t.contact.message}</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+
+          <button class="submit-button" type="submit">
+            {t.contact.send}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .title {
+    text-align: center;
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .contact-info h2,
+  .contact-form h2 {
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .info-items {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .info-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .icon {
+    font-size: 1.5rem;
+    color: rgb(var(--accent));
+  }
+
+  .info-item h3 {
+    margin: 0;
+    color: #444;
+    font-size: 1.2rem;
+  }
+
+  .info-item p {
+    margin: 0.5rem 0 0;
+    color: #666;
+  }
+
+  .form {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .form-group label {
+    color: #444;
+    font-weight: 500;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: rgb(var(--accent));
+    box-shadow: 0 0 0 2px rgba(var(--accent), 0.1);
+  }
+
+  .submit-button {
+    background-color: rgb(var(--accent));
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .submit-button:hover {
+    background-color: rgb(var(--accent-dark));
+  }
+
+  @media (max-width: 768px) {
+    .contact-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .contact-container {
+      padding: 1rem;
+    }
+
+    .title {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+  }
+</style>

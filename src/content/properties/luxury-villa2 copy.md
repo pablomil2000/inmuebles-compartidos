@@ -1,7 +1,7 @@
 ---
-title: "Villa de Lujo en la Costa"
+title: "Villa de Lujo en la Costa 2"
 description: "Espectacular villa con vistas al mar, piscina infinita y acabados de lujo"
-price: 1250000
+price: 1250
 location: "Costa del Sol, Málaga"
 mainImage: "/images/properties/luxury-villa/main.jpg"
 gallery:
@@ -11,9 +11,9 @@ gallery:
 features:
   bedrooms: 4
   bathrooms: 3
-  garage: false
+  garage: true
   garden: true
-  pool: true
+  pool: false
   airConditioning: true
   heating: true
   furnished: true

@@ -2,92 +2,46 @@
 import Layout from '../../../layouts/Layout.astro';
 import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
 import { getCollection } from 'astro:content';
-import RoomFilters from '../../../components/RoomFilters.astro';
+import type { CollectionEntry } from 'astro:content';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const basePath = lang === 'en' ? '/en' : '';
 
 const rooms = await getCollection('rooms');
-
-// Convert room features to amenities array for filtering
-function getAmenities(features: any) {
-  const amenities = [];
-  if (features.furnished) amenities.push('furnished');
-  if (features.desk) amenities.push('desk');
-  if (features.tv) amenities.push('tv');
-  if (features.wifi) amenities.push('wifi');
-  if (features.airConditioning) amenities.push('air_conditioning');
-  if (features.heating) amenities.push('heating');
-  return amenities;
-}
-
-// Map room types and bathroom types to their translation keys
-const roomTypeMap = {
-  individual: 'individual',
-  doble: 'shared',
-  suite: 'individual'
-} as const;
-
-const bathroomTypeMap = {
-  privado: 'private_bathroom',
-  compartido: 'shared_bathroom'
-} as const;
-
-type RoomTypeKey = keyof typeof roomTypeMap;
-type BathroomTypeKey = keyof typeof bathroomTypeMap;
-type FilterKey = keyof typeof t.filters;
 ---
 
-<Layout title={t.nav.rooms}>
+<Layout title="Habitaciones">
   <div class="rooms-container">
-    <h1 class="title">{t.nav.rooms}</h1>
+    <h1 class="title">Habitaciones</h1>
     
-    <div class="rooms-layout">
-      <aside class="filters">
-        <RoomFilters />
-      </aside>
-      
-      <div class="rooms-grid">
-        {rooms.map((room) => {
-          const roomType = roomTypeMap[room.data.features.type as RoomTypeKey] as FilterKey;
-          const bathroomType = bathroomTypeMap[room.data.features.bathroom as BathroomTypeKey] as FilterKey;
-          
-          return (
-            <article class="room-card"
-              data-price={room.data.price}
-              data-room-type={room.data.features.type}
-              data-bathroom={room.data.features.bathroom}
-              data-features={JSON.stringify(getAmenities(room.data.features))}
-            >
-              <a href={`${basePath}/rooms/${room.slug}`}>
-                <img src={room.data.mainImage} alt={room.data.title} class="room-image">
-                <div class="room-info">
-                  <h2>{room.data.title}</h2>
-                  <p class="price" data-price={room.data.price}>
-                    {room.data.price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })} /mes
-                  </p>
-                  <p class="location">{room.data.location}</p>
-                  <div class="features">
-                    <span class="feature">
-                      <span class="feature-icon">🛏️</span>
-                      {t.filters[roomType]}
-                    </span>
-                    <span class="feature">
-                      <span class="feature-icon">🚿</span>
-                      {t.filters[bathroomType]}
-                    </span>
-                    <span class="feature">
-                      <span class="feature-icon">📏</span>
-                      {room.data.squareMeters}m²
-                    </span>
-                  </div>
-                </div>
-              </a>
-            </article>
-          );
-        })}
-      </div>
+    <div class="rooms-grid">
+      {rooms.map((room) => (
+        <article class="room-card">
+          <a href={`${basePath}/rooms/${room.slug}`}>
+            <img src={room.data.mainImage} alt={room.data.title} class="room-image">
+            <div class="room-info">
+              <h2>{room.data.title}</h2>
+              <p class="price">{room.data.price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })} /mes</p>
+              <p class="location">{room.data.location}</p>
+              <div class="features">
+                <span class="feature">
+                  <span class="feature-icon">🛏️</span>
+                  {room.data.features.type}
+                </span>
+                <span class="feature">
+                  <span class="feature-icon">🚿</span>
+                  {room.data.features.bathroom}
+                </span>
+                <span class="feature">
+                  <span class="feature-icon">📏</span>
+                  {room.data.squareMeters}m²
+                </span>
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
     </div>
   </div>
 </Layout>
@@ -100,19 +54,10 @@ type FilterKey = keyof typeof t.filters;
   }
 
   .title {
-    font-size: 2rem;
-    color: #333;
+    text-align: center;
+    color: white;
+    font-size: 2.5rem;
     margin-bottom: 2rem;
-  }
-
-  .rooms-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 2rem;
-  }
-
-  .filters {
-    min-width: 250px;
   }
 
   .rooms-grid {
@@ -125,18 +70,17 @@ type FilterKey = keyof typeof t.filters;
     background: white;
     border-radius: 8px;
     overflow: hidden;
+    transition: transform 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .room-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
   .room-card a {
     text-decoration: none;
-    color: inherit;
+    color: #333;
   }
 
   .room-image {
@@ -146,23 +90,24 @@ type FilterKey = keyof typeof t.filters;
   }
 
   .room-info {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 
   .room-info h2 {
-    margin: 0 0 1rem;
-    font-size: 1.25rem;
-    color: #333;
+    font-size: 1.5rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
   }
 
   .price {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: bold;
     color: rgb(var(--accent));
-    margin: 0.5rem 0;
+    margin: 0;
   }
 
   .location {
+    font-size: 1rem;
     color: #666;
     margin: 0.5rem 0;
   }
@@ -171,14 +116,14 @@ type FilterKey = keyof typeof t.filters;
     display: flex;
     gap: 1rem;
     margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #444;
   }
 
   .feature {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: #666;
-    font-size: 0.9rem;
+    gap: 0.25rem;
   }
 
   .feature-icon {
@@ -186,16 +131,13 @@ type FilterKey = keyof typeof t.filters;
   }
 
   @media (max-width: 768px) {
-    .rooms-layout {
-      grid-template-columns: 1fr;
-    }
-
     .rooms-container {
       padding: 1rem;
     }
 
     .rooms-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
     }
   }
 </style>

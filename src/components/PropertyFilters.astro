@@ -34,7 +34,7 @@ const t = useTranslations(lang);
             min="0" 
             max={maxPrice} 
             value={minPrice}
-            step="1000"
+            step="50"
           >
         </div>
         <div class="input-group">
@@ -45,7 +45,7 @@ const t = useTranslations(lang);
             name="maxPrice" 
             min={minPrice} 
             value={maxPrice}
-            step="1000"
+            step="50"
           >
         </div>
       </div>
@@ -77,7 +77,7 @@ const t = useTranslations(lang);
               name="bathrooms" 
               value={num}
             >
-            {num}+ {t.filters.bathrooms}
+            {num} {t.filters.bathrooms}
           </label>
         ))}
       </div>
@@ -211,63 +211,62 @@ const t = useTranslations(lang);
 <script>
   function initializeFilters() {
     const form = document.getElementById('propertyFilters') as HTMLFormElement;
-    const cards = document.querySelectorAll('.property-card');
+    const properties = document.querySelectorAll('.property-card');
 
-    if (!form || !cards.length) return;
+    if (!form || !properties.length) return;
 
-    // Función para aplicar filtros
-    function applyFilters() {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
       const formData = new FormData(form);
       
       const filters = {
-        minPrice: parseInt(formData.get('minPrice') as string) || 0,
-        maxPrice: parseInt(formData.get('maxPrice') as string) || Infinity,
-        bedrooms: formData.getAll('bedrooms').map(v => parseInt(v as string)),
-        bathrooms: formData.getAll('bathrooms').map(v => parseInt(v as string)),
-        features: formData.getAll('features') as string[]
+        minPrice: Number(formData.get('minPrice')) || 0,
+        maxPrice: Number(formData.get('maxPrice')) || Infinity,
+        bedrooms: formData.getAll('bedrooms').map(Number),
+        bathrooms: formData.getAll('bathrooms').map(Number),
+        features: formData.getAll('features')
       };
 
-      cards.forEach(card => {
-        const price = parseInt(card.getAttribute('data-price') || '0');
-        const bedrooms = parseInt(card.getAttribute('data-bedrooms') || '0');
-        const bathrooms = parseInt(card.getAttribute('data-bathrooms') || '0');
-        const cardFeatures = (card.getAttribute('data-features') || '').split(',').filter(Boolean);
+      properties.forEach(property => {
+        const price = Number(property.getAttribute('data-price')) || 0;
+        const bedrooms = Number(property.getAttribute('data-bedrooms')) || 0;
+        const bathrooms = Number(property.getAttribute('data-bathrooms')) || 0;
+        const propertyFeatures = JSON.parse(property.getAttribute('data-features') || '[]');
 
         const matchesPrice = price >= filters.minPrice && price <= filters.maxPrice;
-        const matchesBedrooms = filters.bedrooms.length === 0 || filters.bedrooms.some(num => bedrooms >= num);
-        const matchesBathrooms = filters.bathrooms.length === 0 || filters.bathrooms.some(num => bathrooms >= num);
+        const matchesBedrooms = filters.bedrooms.length === 0 || 
+          filters.bedrooms.some(num => bedrooms >= num);
+        const matchesBathrooms = filters.bathrooms.length === 0 || 
+          filters.bathrooms.some(num => bathrooms >= num);
         const matchesFeatures = filters.features.length === 0 || 
-          filters.features.every(feature => cardFeatures.includes(feature));
+          filters.features.every(feature => propertyFeatures.includes(feature));
 
+        const element = property as HTMLElement;
         if (matchesPrice && matchesBedrooms && matchesBathrooms && matchesFeatures) {
-          card.classList.remove('hidden');
-          setTimeout(() => (card as HTMLElement).style.opacity = '1', 10);
+          element.style.display = '';
         } else {
-          (card as HTMLElement).style.opacity = '0';
-          setTimeout(() => card.classList.add('hidden'), 300);
+          element.style.display = 'none';
         }
       });
-    }
-
-    // Aplicar filtros al cambiar cualquier input
-    form.querySelectorAll('input').forEach(input => {
-      input.addEventListener('change', applyFilters);
     });
 
-    // Aplicar filtros al enviar el formulario
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      applyFilters();
+    // Initialize price inputs
+    const minPriceInput = form.querySelector('#minPrice') as HTMLInputElement;
+    const maxPriceInput = form.querySelector('#maxPrice') as HTMLInputElement;
+
+    minPriceInput?.addEventListener('change', () => {
+      if (maxPriceInput) {
+        maxPriceInput.min = minPriceInput.value;
+      }
     });
 
-    // Aplicar filtros al cambiar los inputs de precio
-    const priceInputs = form.querySelectorAll('input[type="number"]');
-    priceInputs.forEach(input => {
-      input.addEventListener('input', applyFilters);
+    maxPriceInput?.addEventListener('change', () => {
+      if (minPriceInput) {
+        minPriceInput.max = maxPriceInput.value;
+      }
     });
   }
 
-  // Inicializar filtros después de la navegación y en la carga inicial
-  document.addEventListener('astro:page-load', initializeFilters);
+  // Initialize filters when the DOM is loaded
   document.addEventListener('DOMContentLoaded', initializeFilters);
 </script>

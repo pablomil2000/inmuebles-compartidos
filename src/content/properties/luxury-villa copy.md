@@ -13,7 +13,7 @@ features:
   bathrooms: 3
   garage: false
   garden: true
-  pool: true
+  pool: false
   airConditioning: true
   heating: true
   furnished: true

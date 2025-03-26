@@ -53,28 +53,36 @@ const allBathrooms = [...new Set(properties.map(p => p.data.features.bathrooms))
   }
 
   .title {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 2rem;
     text-align: center;
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
   }
 
   .content-grid {
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 2rem;
+    position: relative;
+    min-height: calc(100vh - 200px); /* Ajustamos la altura mínima */
   }
 
   .filters-sidebar {
     position: sticky;
     top: 2rem;
     height: fit-content;
+    background: white;
+    padding: 1.5rem;
+    /* border-radius: 8px; */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    align-self: start; /* Asegura que se mantenga al inicio */
   }
 
   .properties-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
+    overflow-y: auto; /* Permite scroll en el grid de propiedades */
   }
 
   @media (max-width: 1024px) {
@@ -83,7 +91,8 @@ const allBathrooms = [...new Set(properties.map(p => p.data.features.bathrooms))
     }
 
     .filters-sidebar {
-      position: static;
+      position: relative;
+      top: 0;
       margin-bottom: 2rem;
     }
   }

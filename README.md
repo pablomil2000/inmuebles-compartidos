@@ -1,48 +1,74 @@
-# Astro Starter Kit: Basics
+# Inmuebles Compartidos
 
-```sh
-npm create astro@latest -- --template basics
-```
+Plataforma web multilingüe para la gestión y visualización de propiedades inmobiliarias, desarrollada con Astro.js.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## 🏠 Descripción del Proyecto
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Este proyecto es una aplicación web moderna para la gestión de propiedades inmobiliarias que ofrece:
+- Soporte multilingüe (Español/Inglés)
+- Catálogo de propiedades y habitaciones
+- Filtros de búsqueda avanzados
+- Diseño responsive y moderno
+- Sistema de rutas internacionalizadas
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## 🚀 Estructura del Proyecto
 
 ```text
 /
 ├── public/
+│   ├── images/
+│   │   ├── flags/          # Banderas para selector de idioma
+│   │   ├── properties/     # Imágenes de propiedades
+│   │   └── rooms/         # Imágenes de habitaciones
 │   └── favicon.svg
 ├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
+│   ├── assets/           # Recursos estáticos
+│   ├── components/       # Componentes reutilizables
+│   │   ├── Navbar.astro
+│   │   ├── PropertyCard.astro
+│   │   ├── PropertyFilters.astro
+│   │   ├── RoomFilters.astro
+│   │   └── Welcome.astro
+│   ├── content/         # Contenido en Markdown
+│   │   ├── properties/  # Datos de propiedades
+│   │   └── rooms/      # Datos de habitaciones
+│   ├── i18n/           # Configuración de internacionalización
+│   ├── layouts/        # Plantillas base
+│   └── pages/          # Rutas y páginas
+│       ├── en/         # Páginas en inglés
+│       └── es/         # Páginas en español
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## ⚙️ Tecnologías Utilizadas
 
-## 🧞 Commands
+- [Astro.js](https://astro.build/) - Framework web
+- Content Collections para gestión de contenido
+- i18n para internacionalización
+- Sistema de rutas dinámicas
+- Markdown para contenido estructurado
 
-All commands are run from the root of the project, from a terminal:
+## 🧞 Comandos
 
-| Command                   | Action                                           |
+| Comando                   | Acción                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| `npm install`             | Instala dependencias                             |
+| `npm run dev`             | Inicia servidor de desarrollo en `localhost:4321`|
+| `npm run build`           | Construye el sitio para producción              |
+| `npm run preview`         | Previsualiza la build localmente                |
 
-## 👀 Want to learn more?
+## 🌐 Internacionalización
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+El proyecto soporta múltiples idiomas:
+- 🇪🇸 Español (por defecto)
+- 🇬🇧 Inglés
+
+La estructura de rutas refleja esta configuración con prefijos de idioma (/es/, /en/).
+
+## 📝 Gestión de Contenido
+
+El contenido se gestiona a través de archivos Markdown en:
+- `/src/content/properties/` - Para propiedades inmobiliarias
+- `/src/content/rooms/` - Para habitaciones y suites
+
+Cada propiedad y habitación tiene su propia página detallada con imágenes y características.

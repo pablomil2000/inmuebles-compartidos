@@ -4,35 +4,35 @@ import { getCollection } from 'astro:content';
 import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
-  const properties = await getCollection('properties');
-  return properties.map((property) => ({
-    params: { slug: property.slug },
-    props: { property },
+  const rooms = await getCollection('rooms');
+  return rooms.map((room) => ({
+    params: { slug: room.slug },
+    props: { room },
   }));
 }
 
-const { property } = Astro.props;
+const { room } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
-<Layout title={property.data.title}>
+<Layout title={room.data.title}>
   <main>
-    <div class="property-detail">
+    <div class="room-detail">
       <div class="gallery">
         <div class="main-image">
           <img 
-            src={property.data.mainImage} 
-            alt={property.data.title}
+            src={room.data.mainImage} 
+            alt={room.data.title}
             id="mainImage"
             class="featured-image"
           >
         </div>
         <div class="thumbnails">
-          {property.data.gallery.map((image, index) => (
+          {room.data.gallery.map((image, index) => (
             <img
               src={image}
-              alt={`${property.data.title} - Imagen ${index + 1}`}
+              alt={`${room.data.title} - Imagen ${index + 1}`}
               class="thumbnail"
               data-image={image}
             />
@@ -40,54 +40,66 @@ const t = useTranslations(lang);
         </div>
       </div>
 
-      <div class="property-info">
+      <div class="room-info">
         <div class="info-card">
-          <h1>{property.data.title}</h1>
+          <h1>{room.data.title}</h1>
           <p class="price">
-            {property.data.price.toLocaleString('es-ES', {
+            {room.data.price.toLocaleString('es-ES', {
               style: 'currency',
               currency: 'EUR',
-            })}
+            })} /mes
           </p>
-          <p class="location">{property.data.location}</p>
+          <p class="location">{room.data.location}</p>
 
           <div class="features">
             <h2>Características</h2>
             <ul>
               <li>
                 <span class="feature-icon">🛏️</span>
-                {property.data.features.bedrooms} Dormitorios
+                Habitación {room.data.features.type}
               </li>
               <li>
                 <span class="feature-icon">🚿</span>
-                {property.data.features.bathrooms} Baños
+                Baño {room.data.features.bathroom}
               </li>
               <li>
                 <span class="feature-icon">📏</span>
-                {property.data.squareMeters}m²
+                {room.data.squareMeters}m²
               </li>
-              {property.data.features.garage && (
+              {room.data.features.desk && (
                 <li>
-                  <span class="feature-icon">🚗</span>
-                  Garaje
+                  <span class="feature-icon">💻</span>
+                  Escritorio
                 </li>
               )}
-              {property.data.features.pool && (
+              {room.data.features.tv && (
                 <li>
-                  <span class="feature-icon">🏊‍♂️</span>
-                  Piscina
+                  <span class="feature-icon">📺</span>
+                  TV
                 </li>
               )}
-              {property.data.features.garden && (
+              {room.data.features.wifi && (
                 <li>
-                  <span class="feature-icon">🌳</span>
-                  Jardín
+                  <span class="feature-icon">📡</span>
+                  WiFi
+                </li>
+              )}
+              {room.data.features.airConditioning && (
+                <li>
+                  <span class="feature-icon">❄️</span>
+                  Aire acondicionado
+                </li>
+              )}
+              {room.data.features.heating && (
+                <li>
+                  <span class="feature-icon">🔥</span>
+                  Calefacción
                 </li>
               )}
             </ul>
           </div>
 
-          <div class="description" set:html={property.body}>
+          <div class="description" set:html={room.body}>
           </div>
         </div>
       </div>
@@ -96,7 +108,7 @@ const t = useTranslations(lang);
 </Layout>
 
 <style>
-  .property-detail {
+  .room-detail {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
@@ -144,7 +156,7 @@ const t = useTranslations(lang);
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   }
 
-  .property-info {
+  .room-info {
     color: #333;
   }
 
@@ -174,8 +186,8 @@ const t = useTranslations(lang);
   }
 
   .features {
-    border: 1px solid #666;
     background: #f5f5f5;
+    border: 1px solid #666;
     padding: 1.5rem;
     border-radius: 8px;
     margin-bottom: 2rem;
@@ -209,6 +221,7 @@ const t = useTranslations(lang);
   .description {
     line-height: 1.6;
     color: #444;
+    text-align: justify;
   }
 
   .description :global(h2) {
@@ -221,7 +234,7 @@ const t = useTranslations(lang);
   }
 
   @media (max-width: 768px) {
-    .property-detail {
+    .room-detail {
       grid-template-columns: 1fr;
     }
 

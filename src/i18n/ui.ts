@@ -11,15 +11,9 @@ interface Translations {
   };
   filters: {
     price: string;
-    min: string;
-    max: string;
-    room_type: string;
-    bathroom: string;
+    bedrooms: string;
+    bathrooms: string;
     features: string;
-    individual: string;
-    shared: string;
-    private_bathroom: string;
-    shared_bathroom: string;
     furnished: string;
     desk: string;
     tv: string;
@@ -27,19 +21,37 @@ interface Translations {
     air_conditioning: string;
     heating: string;
     apply: string;
+    garage: string;
+    pool: string;
+    garden: string;
   };
   rooms: {
     individual: string;
     shared: string;
     private: string;
     shared_bathroom: string;
-  }
+  };
+  contact: {
+    info_title: string;
+    form_title: string;
+    address: string;
+    phone: string;
+    email: string;
+    hours: string;
+    schedule: string;
+    name: string;
+    email_field: string;
+    phone_field: string;
+    subject: string;
+    message: string;
+    send: string;
+  };
 }
 
 export const languages = {
   es: 'Español',
   en: 'English',
-};
+} as const;
 
 export const defaultLang = 'es';
 
@@ -57,28 +69,40 @@ export const translations: Record<string, Translations> = {
     },
     filters: {
       price: 'Precio',
-      min: 'Mínimo',
-      max: 'Máximo',
-      room_type: 'Tipo de habitación',
-      bathroom: 'Baño',
+      bedrooms: 'Dormitorios',
+      bathrooms: 'Baños',
       features: 'Características',
-      individual: 'Individual',
-      shared: 'Compartida',
-      private_bathroom: 'Baño privado',
-      shared_bathroom: 'Baño compartido',
-      furnished: 'Amueblada',
+      furnished: 'Amueblado',
       desk: 'Escritorio',
       tv: 'TV',
       wifi: 'WiFi',
       air_conditioning: 'Aire acondicionado',
       heating: 'Calefacción',
-      apply: 'Aplicar filtros'
+      apply: 'Aplicar filtros',
+      garage: 'Garaje',
+      pool: 'Piscina',
+      garden: 'Jardín'
     },
     rooms: {
       individual: 'Individual',
       shared: 'Compartida',
       private: 'Baño privado',
       shared_bathroom: 'Baño compartido'
+    },
+    contact: {
+      info_title: 'Información de Contacto',
+      form_title: 'Envíanos un Mensaje',
+      address: 'Dirección',
+      phone: 'Teléfono',
+      email: 'Correo Electrónico',
+      hours: 'Horario',
+      schedule: 'Lunes a Viernes: 9:00 - 20:00\nSábados: 10:00 - 14:00',
+      name: 'Nombre',
+      email_field: 'Correo Electrónico',
+      phone_field: 'Teléfono',
+      subject: 'Asunto',
+      message: 'Mensaje',
+      send: 'Enviar Mensaje'
     }
   },
   en: {
@@ -94,28 +118,40 @@ export const translations: Record<string, Translations> = {
     },
     filters: {
       price: 'Price',
-      min: 'Min',
-      max: 'Max',
-      room_type: 'Room Type',
-      bathroom: 'Bathroom',
+      bedrooms: 'Bedrooms',
+      bathrooms: 'Bathrooms',
       features: 'Features',
-      individual: 'Individual',
-      shared: 'Shared',
-      private_bathroom: 'Private bathroom',
-      shared_bathroom: 'Shared bathroom',
       furnished: 'Furnished',
       desk: 'Desk',
       tv: 'TV',
       wifi: 'WiFi',
-      air_conditioning: 'Air conditioning',
+      air_conditioning: 'Air Conditioning',
       heating: 'Heating',
-      apply: 'Apply filters'
+      apply: 'Apply Filters',
+      garage: 'Garage',
+      pool: 'Pool',
+      garden: 'Garden'
     },
     rooms: {
       individual: 'Individual',
       shared: 'Shared',
       private: 'Private bathroom',
       shared_bathroom: 'Shared bathroom'
+    },
+    contact: {
+      info_title: 'Contact Information',
+      form_title: 'Send us a Message',
+      address: 'Address',
+      phone: 'Phone',
+      email: 'Email',
+      hours: 'Business Hours',
+      schedule: 'Monday to Friday: 9:00 AM - 8:00 PM\nSaturday: 10:00 AM - 2:00 PM',
+      name: 'Name',
+      email_field: 'Email',
+      phone_field: 'Phone',
+      subject: 'Subject',
+      message: 'Message',
+      send: 'Send Message'
     }
   }
 };

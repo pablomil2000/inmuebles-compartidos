@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { getLangFromUrl } from '../i18n/utils';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
   property: CollectionEntry<'properties'>;
@@ -8,13 +8,17 @@ interface Props {
 
 const { property } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 const basePath = lang === 'en' ? '/en' : '';
 
-// Preparar los features para el filtrado
-const features = [];
-if (property.data.features.garage) features.push('garage');
-if (property.data.features.pool) features.push('pool');
-if (property.data.features.garden) features.push('garden');
+// Convert features to array for filtering
+function getFeatures(features: any) {
+  const featuresList = [];
+  if (features.garage) featuresList.push('garage');
+  if (features.pool) featuresList.push('pool');
+  if (features.garden) featuresList.push('garden');
+  return featuresList;
+}
 
 const formattedPrice = property.data.price.toLocaleString(lang === 'es' ? 'es-ES' : 'en-US', {
   style: 'currency',
@@ -26,7 +30,7 @@ const formattedPrice = property.data.price.toLocaleString(lang === 'es' ? 'es-ES
   data-price={property.data.price}
   data-bedrooms={property.data.features.bedrooms}
   data-bathrooms={property.data.features.bathrooms}
-  data-features={features.join(',')}
+  data-features={JSON.stringify(getFeatures(property.data.features))}
 >
   <div class="image-container">
     <a href={`${basePath}/properties/${property.slug}`}>
