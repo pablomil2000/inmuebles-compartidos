@@ -11,6 +11,8 @@ interface Translations {
   };
   filters: {
     price: string;
+    min: string;
+    max: string;
     bedrooms: string;
     bathrooms: string;
     features: string;
@@ -20,16 +22,22 @@ interface Translations {
     wifi: string;
     air_conditioning: string;
     heating: string;
-    apply: string;
+    reset: string;
     garage: string;
     pool: string;
     garden: string;
+    suite: string;
   };
   rooms: {
+    type: string;
+    bathroomType: string;
     individual: string;
     shared: string;
+    suite: string;
     private: string;
     shared_bathroom: string;
+    privateBathroom: string;
+    sharedBathroom: string;
   };
   contact: {
     info_title: string;
@@ -69,6 +77,8 @@ export const translations: Record<string, Translations> = {
     },
     filters: {
       price: 'Precio',
+      min: 'Mínimo',
+      max: 'Máximo',
       bedrooms: 'Dormitorios',
       bathrooms: 'Baños',
       features: 'Características',
@@ -78,16 +88,22 @@ export const translations: Record<string, Translations> = {
       wifi: 'WiFi',
       air_conditioning: 'Aire acondicionado',
       heating: 'Calefacción',
-      apply: 'Aplicar filtros',
+      reset: 'Reiniciar filtros',
       garage: 'Garaje',
       pool: 'Piscina',
-      garden: 'Jardín'
+      garden: 'Jardín',
+      suite: 'Suite'
     },
     rooms: {
+      type: 'Tipo de habitación',
+      bathroomType: 'Tipo de baño',
       individual: 'Individual',
       shared: 'Compartida',
+      suite: 'Suite',
       private: 'Baño privado',
-      shared_bathroom: 'Baño compartido'
+      shared_bathroom: 'Baño compartido',
+      privateBathroom: 'Baño privado',
+      sharedBathroom: 'Baño compartido'
     },
     contact: {
       info_title: 'Información de Contacto',
@@ -102,7 +118,7 @@ export const translations: Record<string, Translations> = {
       phone_field: 'Teléfono',
       subject: 'Asunto',
       message: 'Mensaje',
-      send: 'Enviar Mensaje'
+      send: 'Enviar'
     }
   },
   en: {
@@ -113,11 +129,13 @@ export const translations: Record<string, Translations> = {
       contact: 'Contact'
     },
     welcome: {
-      title: 'Welcome to Real Estate',
+      title: 'Welcome to Inmuebles',
       description: 'Find your ideal home'
     },
     filters: {
       price: 'Price',
+      min: 'Min',
+      max: 'Max',
       bedrooms: 'Bedrooms',
       bathrooms: 'Bathrooms',
       features: 'Features',
@@ -127,16 +145,22 @@ export const translations: Record<string, Translations> = {
       wifi: 'WiFi',
       air_conditioning: 'Air Conditioning',
       heating: 'Heating',
-      apply: 'Apply Filters',
+      reset: 'Reset Filters',
       garage: 'Garage',
       pool: 'Pool',
-      garden: 'Garden'
+      garden: 'Garden',
+      suite: 'Suite'
     },
     rooms: {
+      type: 'Room Type',
+      bathroomType: 'Bathroom Type',
       individual: 'Individual',
       shared: 'Shared',
-      private: 'Private bathroom',
-      shared_bathroom: 'Shared bathroom'
+      suite: 'Suite',
+      private: 'Private Bathroom',
+      shared_bathroom: 'Shared Bathroom',
+      privateBathroom: 'Private Bathroom',
+      sharedBathroom: 'Shared Bathroom'
     },
     contact: {
       info_title: 'Contact Information',
@@ -144,14 +168,14 @@ export const translations: Record<string, Translations> = {
       address: 'Address',
       phone: 'Phone',
       email: 'Email',
-      hours: 'Business Hours',
-      schedule: 'Monday to Friday: 9:00 AM - 8:00 PM\nSaturday: 10:00 AM - 2:00 PM',
+      hours: 'Hours',
+      schedule: 'Monday to Friday: 9:00 - 20:00\nSaturday: 10:00 - 14:00',
       name: 'Name',
       email_field: 'Email',
       phone_field: 'Phone',
       subject: 'Subject',
       message: 'Message',
-      send: 'Send Message'
+      send: 'Send'
     }
   }
 };

@@ -7,6 +7,8 @@ export interface Translations {
   'nav.contact': string;
   filters: {
     price: string;
+    min: string;
+    max: string;
     bedrooms: string;
     bathrooms: string;
     features: string;

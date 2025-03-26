@@ -3,141 +3,101 @@ import Layout from '../../layouts/Layout.astro';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import RoomFilters from '../../components/RoomFilters.astro';
+import RoomCard from '../../components/RoomCard.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const basePath = lang === 'en' ? '/en' : '';
 
 const rooms = await getCollection('rooms');
+const prices = rooms.map(r => r.data.price);
+const minPrice = Math.min(...prices);
+const maxPrice = Math.max(...prices);
 ---
 
-<Layout title="Habitaciones">
-  <div class="rooms-container">
-    <h1 class="title">Habitaciones</h1>
+<Layout title={t.nav.rooms}>
+  <div class="properties-container">
+    <h1 class="title">{t.nav.rooms}</h1>
     
-    <div class="rooms-grid">
-      {rooms.map((room) => (
-        <article class="room-card">
-          <a href={`${basePath}/rooms/${room.slug}`}>
-            <img src={room.data.mainImage} alt={room.data.title} class="room-image">
-            <div class="room-info">
-              <h2>{room.data.title}</h2>
-              <p class="price">{room.data.price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })} /mes</p>
-              <p class="location">{room.data.location}</p>
-              <div class="features">
-                <span class="feature">
-                  <span class="feature-icon">🛏️</span>
-                  {room.data.features.type}
-                </span>
-                <span class="feature">
-                  <span class="feature-icon">🚿</span>
-                  {room.data.features.bathroom}
-                </span>
-                <span class="feature">
-                  <span class="feature-icon">📏</span>
-                  {room.data.squareMeters}m²
-                </span>
-              </div>
-            </div>
-          </a>
-        </article>
-      ))}
+    <div class="content-grid">
+      <aside class="filters-sidebar">
+        <RoomFilters
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          features={['bathroom', 'desktop', 'television', 'air conditioning', 'heating', 'wifi']}
+        />
+      </aside>
+
+      <div class="properties-grid">
+        {rooms.map((room: CollectionEntry<'rooms'>) => (
+          <RoomCard room={room} />
+        ))}
+      </div>
     </div>
   </div>
 </Layout>
 
+
 <style>
-  .rooms-container {
-    max-width: 1200px;
+  .properties-container {
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
   }
 
   .title {
     text-align: center;
-    color: white;
+    color: #333;
     font-size: 2.5rem;
     margin-bottom: 2rem;
   }
 
-  .rooms-grid {
+  .content-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    position: relative;
+    min-height: calc(100vh - 200px); /* Ajustamos la altura mínima */
+  }
+
+  .filters-sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    align-self: start; /* Asegura que se mantenga al inicio */
+  }
+
+  .properties-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
+    overflow-y: auto; /* Permite scroll en el grid de propiedades */
   }
 
-  .room-card {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
 
-  .room-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .room-card a {
-    text-decoration: none;
-    color: #333;
-  }
-
-  .room-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
-
-  .room-info {
-    padding: 1rem;
-  }
-
-  .room-info h2 {
-    font-size: 1.5rem;
-    margin: 0;
-    margin-bottom: 0.5rem;
-  }
-
-  .price {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: rgb(var(--accent));
-    margin: 0;
-  }
-
-  .location {
-    font-size: 1rem;
-    color: #666;
-    margin: 0.5rem 0;
-  }
-
-  .features {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #444;
-  }
-
-  .feature {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-  }
-
-  .feature-icon {
-    font-size: 1.2rem;
+    .filters-sidebar {
+      position: relative;
+      top: 0;
+      margin-bottom: 2rem;
+    }
   }
 
   @media (max-width: 768px) {
-    .rooms-container {
+    .properties-container {
       padding: 1rem;
     }
 
-    .rooms-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
+    .properties-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

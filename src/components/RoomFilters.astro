@@ -48,29 +48,33 @@ const t = useTranslations(lang);
     </div>
 
     <div class="filter-group">
-      <h3>{t.filters.room_type}</h3>
+      <h3>{t.rooms.type}</h3>
       <div class="checkbox-group">
         <label class="checkbox-label">
-          <input type="checkbox" name="room_type" value="individual">
-          {t.filters.individual}
+          <input type="checkbox" name="room_type" value="individual" class="room-type-filter">
+          {t.rooms.individual}
         </label>
         <label class="checkbox-label">
-          <input type="checkbox" name="room_type" value="shared">
-          {t.filters.shared}
+          <input type="checkbox" name="room_type" value="shared" class="room-type-filter">
+          {t.rooms.shared}
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" name="room_type" value="suite" class="room-type-filter">
+          {t.rooms.suite}
         </label>
       </div>
     </div>
 
     <div class="filter-group">
-      <h3>{t.filters.bathroom}</h3>
+      <h3>{t.rooms.bathroomType}</h3>
       <div class="checkbox-group">
         <label class="checkbox-label">
-          <input type="checkbox" name="bathroom" value="private">
-          {t.filters.private_bathroom}
+          <input type="checkbox" name="bathroom" value="private_bathroom" class="bathroom-filter">
+          {t.rooms.privateBathroom}
         </label>
         <label class="checkbox-label">
-          <input type="checkbox" name="bathroom" value="shared">
-          {t.filters.shared_bathroom}
+          <input type="checkbox" name="bathroom" value="shared_bathroom" class="bathroom-filter">
+          {t.rooms.sharedBathroom}
         </label>
       </div>
     </div>
@@ -78,7 +82,7 @@ const t = useTranslations(lang);
     <div class="filter-group">
       <h3>{t.filters.features}</h3>
       <div class="checkbox-group">
-        {['furnished', 'desk', 'tv', 'wifi', 'air_conditioning', 'heating'].map(feature => (
+        {features.map(feature => (
           <label class="checkbox-label">
             <input 
               type="checkbox" 
@@ -91,9 +95,6 @@ const t = useTranslations(lang);
       </div>
     </div>
 
-    <button type="submit" class="apply-filters">
-      {t.filters.apply}
-    </button>
   </form>
 </div>
 
@@ -155,9 +156,9 @@ const t = useTranslations(lang);
   }
 
   .checkbox-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
   }
 
   .checkbox-label {
@@ -169,21 +170,20 @@ const t = useTranslations(lang);
   }
 
   .checkbox-label input[type="checkbox"] {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
   }
 
   .apply-filters {
-    width: 100%;
-    padding: 0.75rem;
     background: rgb(var(--accent));
     color: white;
     border: none;
+    padding: 0.75rem;
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background-color 0.3s ease;
   }
 
   .apply-filters:hover {
@@ -196,39 +196,63 @@ const t = useTranslations(lang);
       top: 0;
       margin-bottom: 2rem;
     }
+
+    .checkbox-group {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+  }
+
+  .property-card {
+    transition: opacity 0.3s ease;
+  }
+
+  .property-card.hidden {
+    display: none;
   }
 </style>
 
 <script>
   function initializeFilters() {
-    const form = document.getElementById('roomFilters') as HTMLFormElement;
+    const form = document.getElementById('roomFilters') as HTMLFormElement | null;
     const rooms = document.querySelectorAll('.room-card');
 
     if (!form || !rooms.length) return;
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
+    // Función para aplicar los filtros
+    function applyFilters() {
+      if (!form) return;
+
       const formData = new FormData(form);
       
       const filters = {
         minPrice: Number(formData.get('minPrice')) || 0,
         maxPrice: Number(formData.get('maxPrice')) || Infinity,
-        roomTypes: formData.getAll('room_type'),
-        bathrooms: formData.getAll('bathroom'),
-        features: formData.getAll('features')
+        roomTypes: Array.from(form.querySelectorAll('input[name="room_type"]:checked') as NodeListOf<HTMLInputElement>).map(input => input.value),
+        bathrooms: Array.from(form.querySelectorAll('input[name="bathroom"]:checked') as NodeListOf<HTMLInputElement>).map(input => input.value),
+        features: Array.from(form.querySelectorAll('input[name="features"]:checked') as NodeListOf<HTMLInputElement>).map(input => input.value)
       };
 
       rooms.forEach(room => {
         const price = Number(room.getAttribute('data-price')) || 0;
         const roomType = room.getAttribute('data-room-type');
         const bathroom = room.getAttribute('data-bathroom');
-        const roomFeatures = JSON.parse(room.getAttribute('data-features') || '[]');
+        const roomFeatures = JSON.parse(room.getAttribute('data-features') || '{}');
 
         const matchesPrice = price >= filters.minPrice && price <= filters.maxPrice;
         const matchesRoomType = filters.roomTypes.length === 0 || filters.roomTypes.includes(roomType || '');
         const matchesBathroom = filters.bathrooms.length === 0 || filters.bathrooms.includes(bathroom || '');
         const matchesFeatures = filters.features.length === 0 || 
-          filters.features.every(feature => roomFeatures.includes(feature));
+          filters.features.every(feature => {
+            switch(feature) {
+              case 'furnished': return roomFeatures.furnished;
+              case 'desk': return roomFeatures.desk;
+              case 'tv': return roomFeatures.tv;
+              case 'wifi': return roomFeatures.wifi;
+              case 'air_conditioning': return roomFeatures.airConditioning;
+              case 'heating': return roomFeatures.heating;
+              default: return false;
+            }
+          });
 
         const element = room as HTMLElement;
         if (matchesPrice && matchesRoomType && matchesBathroom && matchesFeatures) {
@@ -237,25 +261,39 @@ const t = useTranslations(lang);
           element.style.display = 'none';
         }
       });
-    });
+    }
 
-    // Initialize price inputs
-    const minPriceInput = form.querySelector('#minPrice') as HTMLInputElement;
-    const maxPriceInput = form.querySelector('#maxPrice') as HTMLInputElement;
+    // Agregar eventos para todos los inputs
+    if (form) {
+      const inputs = form.querySelectorAll('input');
+      
+      inputs.forEach(input => {
+        input.addEventListener('change', applyFilters);
+        
+        if (input.type === 'number') {
+          input.addEventListener('input', applyFilters);
+        }
+      });
 
-    minPriceInput?.addEventListener('change', () => {
-      if (maxPriceInput) {
-        maxPriceInput.min = minPriceInput.value;
+      // Inicializar los valores de los rangos de precio
+      const minPriceInput = form.querySelector('#minPrice') as HTMLInputElement | null;
+      const maxPriceInput = form.querySelector('#maxPrice') as HTMLInputElement | null;
+
+      if (minPriceInput && maxPriceInput) {
+        minPriceInput.addEventListener('change', () => {
+          maxPriceInput.min = minPriceInput.value;
+        });
+
+        maxPriceInput.addEventListener('change', () => {
+          minPriceInput.max = maxPriceInput.value;
+        });
       }
-    });
 
-    maxPriceInput?.addEventListener('change', () => {
-      if (minPriceInput) {
-        minPriceInput.max = maxPriceInput.value;
-      }
-    });
+      // Aplicar los filtros inicialmente
+      applyFilters();
+    }
   }
 
-  // Initialize filters when the DOM is loaded
+  // Inicializar los filtros cuando el DOM esté cargado
   document.addEventListener('DOMContentLoaded', initializeFilters);
 </script>

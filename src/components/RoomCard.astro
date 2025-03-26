@@ -1,0 +1,148 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  room: CollectionEntry<'rooms'>;
+}
+
+const { room } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const basePath = lang === 'en' ? '/en' : '';
+
+const formattedPrice = room.data.price.toLocaleString(lang === 'es' ? 'es-ES' : 'en-US', {
+  style: 'currency',
+  currency: 'EUR'
+});
+---
+
+<article class="room-card" 
+  data-price={room.data.price}
+  data-room-type={room.data.features.type}
+  data-bathroom={room.data.features.bathroom}
+  data-features={JSON.stringify({
+    furnished: room.data.features.furnished,
+    desk: room.data.features.desk,
+    tv: room.data.features.tv,
+    wifi: room.data.features.wifi,
+    airConditioning: room.data.features.airConditioning,
+    heating: room.data.features.heating
+  })}
+>
+  <a href={`${Astro.url.pathname}/${room.slug}`}>
+    <img src={room.data.mainImage} alt={room.data.title} class="room-image">
+    <div class="room-info">
+      <h2>{room.data.title}</h2>
+      <p class="price">{formattedPrice} /mes</p>
+      <p class="location">{room.data.location}</p>
+      <div class="features">
+        <span class="feature">
+          <span class="feature-icon">🛏️</span>
+          {room.data.features.type}
+        </span>
+        <span class="feature">
+          <span class="feature-icon">🚿</span>
+          {room.data.features.bathroom}
+        </span>
+        <span class="feature">
+          <span class="feature-icon">📏</span>
+          {room.data.squareMeters}m²
+        </span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .room-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .room-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .room-card a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .room-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .room-info {
+    padding: 1rem;
+  }
+
+  .room-info h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .price {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: rgb(var(--accent));
+    margin: 0;
+  }
+
+  .location {
+    font-size: 1rem;
+    color: #666;
+    margin: 0.5rem 0;
+  }
+
+  .features {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #444;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .feature-icon {
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 768px) {
+    .room-card {
+      width: 100%;
+    }
+
+    .room-image {
+      height: 150px;
+    }
+
+    .room-info {
+      padding: 0.75rem;
+    }
+
+    .room-info h2 {
+      font-size: 1.25rem;
+    }
+
+    .price {
+      font-size: 1.1rem;
+    }
+
+    .features {
+      gap: 0.75rem;
+      font-size: 0.85rem;
+    }
+  }
+</style>
