@@ -1,43 +1,91 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import PropertyCard from '../../../components/PropertyCard.astro';
+import PropertyFilters from '../../../components/PropertyFilters.astro';
+import { getLangFromUrl, useTranslations } from '../../../i18n/utils';
 import { getCollection } from 'astro:content';
-import { translations } from '../../../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
 
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const basePath = lang === 'en' ? '/en' : '';
+
 const properties = await getCollection('properties');
-const t = translations.en;
+
+// Obtener rangos de precios y características para los filtros
+const prices = properties.map(p => p.data.price);
+const minPrice = Math.min(...prices);
+const maxPrice = Math.max(...prices);
+
+const allBedrooms = [...new Set(properties.map(p => p.data.features.bedrooms))].sort((a, b) => a - b);
+const allBathrooms = [...new Set(properties.map(p => p.data.features.bathrooms))].sort((a, b) => a - b);
 ---
 
-<Layout title={t['nav.properties']}>
+<Layout title={t.nav.properties}>
   <div class="properties-container">
-    <h1 class="title">{t['nav.properties']}</h1>
+    <h1 class="title">{t.nav.properties}</h1>
     
-    <div class="properties-grid">
-      {properties.map((property: CollectionEntry<'properties'>) => (
-        <PropertyCard property={property} />
-      ))}
+    <div class="content-grid">
+      <aside class="filters-sidebar">
+        <PropertyFilters
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          bedrooms={allBedrooms}
+          bathrooms={allBathrooms}
+          features={['garage', 'pool', 'garden']}
+        />
+      </aside>
+
+      <div class="properties-grid">
+        {properties.map((property: CollectionEntry<'properties'>) => (
+          <PropertyCard property={property} />
+        ))}
+      </div>
     </div>
   </div>
 </Layout>
 
 <style>
   .properties-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
   }
 
   .title {
-    text-align: center;
-    margin-bottom: 2rem;
+    font-size: 2rem;
     color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+  }
+
+  .filters-sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
   }
 
   .properties-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .filters-sidebar {
+      position: static;
+      margin-bottom: 2rem;
+    }
   }
 
   @media (max-width: 768px) {

@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import PropertyCard from '../../components/PropertyCard.astro';
+import PropertyFilters from '../../components/PropertyFilters.astro';
 import { getLangFromUrl, useTranslations } from '../../i18n/utils';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
@@ -10,32 +11,64 @@ const t = useTranslations(lang);
 const basePath = lang === 'en' ? '/en' : '';
 
 const properties = await getCollection('properties');
+
+// Obtener rangos de precios y características para los filtros
+const prices = properties.map(p => p.data.price);
+const minPrice = Math.min(...prices);
+const maxPrice = Math.max(...prices);
+
+const allBedrooms = [...new Set(properties.map(p => p.data.features.bedrooms))].sort((a, b) => a - b);
+const allBathrooms = [...new Set(properties.map(p => p.data.features.bathrooms))].sort((a, b) => a - b);
 ---
 
 <Layout title={t.nav.properties}>
   <div class="properties-container">
     <h1 class="title">{t.nav.properties}</h1>
     
-    <div class="properties-grid">
-      {properties.map((property: CollectionEntry<'properties'>) => (
-        <PropertyCard property={property} />
-      ))}
+    <div class="content-grid">
+      <aside class="filters-sidebar">
+        <PropertyFilters
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          bedrooms={allBedrooms}
+          bathrooms={allBathrooms}
+          features={['garage', 'pool', 'garden']}
+        />
+      </aside>
+
+      <div class="properties-grid">
+        {properties.map((property: CollectionEntry<'properties'>) => (
+          <PropertyCard property={property} />
+        ))}
+      </div>
     </div>
   </div>
 </Layout>
 
 <style>
   .properties-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
   }
 
   .title {
-    text-align: center;
-    color: white;
-    font-size: 2.5rem;
+    font-size: 2rem;
+    color: #333;
     margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+  }
+
+  .filters-sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
   }
 
   .properties-grid {
@@ -44,14 +77,24 @@ const properties = await getCollection('properties');
     gap: 2rem;
   }
 
+  @media (max-width: 1024px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .filters-sidebar {
+      position: static;
+      margin-bottom: 2rem;
+    }
+  }
+
   @media (max-width: 768px) {
     .properties-container {
       padding: 1rem;
     }
 
     .properties-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
+      grid-template-columns: 1fr;
     }
   }
 </style>

@@ -1,0 +1,273 @@
+---
+interface Props {
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number[];
+  bathrooms?: number[];
+  features?: string[];
+}
+
+const { 
+  minPrice = 0, 
+  maxPrice = 1000000, 
+  bedrooms = [1,2,3,4,5], 
+  bathrooms = [1,2,3,4],
+  features = ['garage', 'pool', 'garden']
+} = Astro.props;
+
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div class="filters-container">
+  <form id="propertyFilters" class="filters-form">
+    <div class="filter-group">
+      <h3>Precio</h3>
+      <div class="price-inputs">
+        <div class="input-group">
+          <label for="minPrice">Min</label>
+          <input 
+            type="number" 
+            id="minPrice" 
+            name="minPrice" 
+            min="0" 
+            max={maxPrice} 
+            value={minPrice}
+            step="1000"
+          >
+        </div>
+        <div class="input-group">
+          <label for="maxPrice">Max</label>
+          <input 
+            type="number" 
+            id="maxPrice" 
+            name="maxPrice" 
+            min={minPrice} 
+            value={maxPrice}
+            step="1000"
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <h3>{t.filters.bedrooms}</h3>
+      <div class="checkbox-group">
+        {bedrooms.map(num => (
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              name="bedrooms" 
+              value={num}
+            >
+            {num}+ {t.filters.bedrooms}
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <h3>{t.filters.bathrooms}</h3>
+      <div class="checkbox-group">
+        {bathrooms.map(num => (
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              name="bathrooms" 
+              value={num}
+            >
+            {num}+ {t.filters.bathrooms}
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <h3>Características</h3>
+      <div class="checkbox-group">
+        {features.map(feature => (
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              name="features" 
+              value={feature}
+            >
+            {t.filters[feature as keyof typeof t.filters]}
+          </label>
+        ))}
+      </div>
+    </div>
+
+    <button type="submit" class="apply-filters">
+      {t.filters.apply}
+    </button>
+  </form>
+</div>
+
+<style>
+  .filters-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .filters-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .filter-group {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+  }
+
+  .filter-group:last-child {
+    border-bottom: none;
+  }
+
+  .filter-group h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+  .price-inputs {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .input-group {
+    flex: 1;
+  }
+
+  .input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #444;
+    cursor: pointer;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  .apply-filters {
+    background: rgb(var(--accent));
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .apply-filters:hover {
+    background: rgb(var(--accent-dark));
+  }
+
+  @media (max-width: 768px) {
+    .checkbox-group {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+  }
+
+  .property-card {
+    transition: opacity 0.3s ease;
+  }
+
+  .property-card.hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  function initializeFilters() {
+    const form = document.getElementById('propertyFilters') as HTMLFormElement;
+    const cards = document.querySelectorAll('.property-card');
+
+    if (!form || !cards.length) return;
+
+    // Función para aplicar filtros
+    function applyFilters() {
+      const formData = new FormData(form);
+      
+      const filters = {
+        minPrice: parseInt(formData.get('minPrice') as string) || 0,
+        maxPrice: parseInt(formData.get('maxPrice') as string) || Infinity,
+        bedrooms: formData.getAll('bedrooms').map(v => parseInt(v as string)),
+        bathrooms: formData.getAll('bathrooms').map(v => parseInt(v as string)),
+        features: formData.getAll('features') as string[]
+      };
+
+      cards.forEach(card => {
+        const price = parseInt(card.getAttribute('data-price') || '0');
+        const bedrooms = parseInt(card.getAttribute('data-bedrooms') || '0');
+        const bathrooms = parseInt(card.getAttribute('data-bathrooms') || '0');
+        const cardFeatures = (card.getAttribute('data-features') || '').split(',').filter(Boolean);
+
+        const matchesPrice = price >= filters.minPrice && price <= filters.maxPrice;
+        const matchesBedrooms = filters.bedrooms.length === 0 || filters.bedrooms.some(num => bedrooms >= num);
+        const matchesBathrooms = filters.bathrooms.length === 0 || filters.bathrooms.some(num => bathrooms >= num);
+        const matchesFeatures = filters.features.length === 0 || 
+          filters.features.every(feature => cardFeatures.includes(feature));
+
+        if (matchesPrice && matchesBedrooms && matchesBathrooms && matchesFeatures) {
+          card.classList.remove('hidden');
+          setTimeout(() => (card as HTMLElement).style.opacity = '1', 10);
+        } else {
+          (card as HTMLElement).style.opacity = '0';
+          setTimeout(() => card.classList.add('hidden'), 300);
+        }
+      });
+    }
+
+    // Aplicar filtros al cambiar cualquier input
+    form.querySelectorAll('input').forEach(input => {
+      input.addEventListener('change', applyFilters);
+    });
+
+    // Aplicar filtros al enviar el formulario
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      applyFilters();
+    });
+
+    // Aplicar filtros al cambiar los inputs de precio
+    const priceInputs = form.querySelectorAll('input[type="number"]');
+    priceInputs.forEach(input => {
+      input.addEventListener('input', applyFilters);
+    });
+  }
+
+  // Inicializar filtros después de la navegación y en la carga inicial
+  document.addEventListener('astro:page-load', initializeFilters);
+  document.addEventListener('DOMContentLoaded', initializeFilters);
+</script>
