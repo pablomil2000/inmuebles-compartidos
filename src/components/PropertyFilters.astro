@@ -215,8 +215,8 @@ const t = useTranslations(lang);
 
     if (!form || !properties.length) return;
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
+    // Función para aplicar los filtros
+    function applyFilters() {
       const formData = new FormData(form);
       
       const filters = {
@@ -248,9 +248,18 @@ const t = useTranslations(lang);
           element.style.display = 'none';
         }
       });
+    }
+
+    // Agregar eventos para todos los inputs
+    form.querySelectorAll('input').forEach(input => {
+      input.addEventListener('change', applyFilters);
+      // Para los rangos de precio, también aplicar cuando se suelta el mouse
+      if (input.type === 'number') {
+        input.addEventListener('input', applyFilters);
+      }
     });
 
-    // Initialize price inputs
+    // Inicializar los valores de los rangos de precio
     const minPriceInput = form.querySelector('#minPrice') as HTMLInputElement;
     const maxPriceInput = form.querySelector('#maxPrice') as HTMLInputElement;
 
@@ -265,8 +274,11 @@ const t = useTranslations(lang);
         minPriceInput.max = maxPriceInput.value;
       }
     });
+
+    // Aplicar los filtros inicialmente
+    applyFilters();
   }
 
-  // Initialize filters when the DOM is loaded
+  // Inicializar los filtros cuando el DOM esté cargado
   document.addEventListener('DOMContentLoaded', initializeFilters);
 </script>
