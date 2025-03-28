@@ -34,18 +34,18 @@ const alternateUrl = getAlternateUrl(currentPath, lang);
     </button>
 
     <div class="nav-links">
-      <a href={`${basePath}/`} class:list={['nav-link', { active: currentPath === `${basePath}/` }]}>
+      <button class:list={['nav-link', { active: currentPath === `${basePath}/` }]} data-url=`${basePath}/`>
         {t.nav.home}
-      </a>
-      <a href={`${basePath}/properties`} class:list={['nav-link', { active: currentPath.includes('/properties') }]}>
+      </button>
+      <button class:list={['nav-link', { active: currentPath.includes('/properties') }]} data-url=`${basePath}/properties`>
         {t.nav.properties}
-      </a>
-      <a href={`${basePath}/rooms`} class:list={['nav-link', { active: currentPath.includes('/rooms') }]}>
+      </button>
+      <button class:list={['nav-link', { active: currentPath.includes('/rooms') }]} data-url=`${basePath}/rooms`>
         {t.nav.rooms}
-      </a>
-      <a href={`${basePath}/contact`} class:list={['nav-link', { active: currentPath.includes('/contact') }]}>
+      </button>
+      <button class:list={['nav-link', { active: currentPath.includes('/contact') }]} data-url=`${basePath}/contact`>
         {t.nav.contact}
-      </a>
+      </button>
 
       <div class="language-switcher mobile">
         <a href={lang === 'en' ? currentPath.replace('/en', '') : alternateUrl} class:list={["flag-link", { active: lang === 'es' }]} aria-label="Español">
@@ -67,19 +67,6 @@ const alternateUrl = getAlternateUrl(currentPath, lang);
     </div>
   </div>
 </nav>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-
-    menuToggle?.addEventListener('click', () => {
-      menuToggle.classList.toggle('active');
-      navLinks?.classList.toggle('active');
-    });
-  });
-</script>
-
 <style>
   .navbar {
     position: fixed;
@@ -220,9 +207,46 @@ const alternateUrl = getAlternateUrl(currentPath, lang);
       margin-top: 2rem;
     }
   }
+
+
+  /* Estilos para que los botones parezcan enlaces */
+button.nav-link {
+  all: unset; /* Resetea todos los estilos por defecto del botón */
+  color: #666; /* Color similar al de los enlaces */
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer; /* Hace que el cursor sea el de un enlace */
+  transition: color 0.3s ease;
+  display: inline; /* Se comporta como un enlace en línea */
+  padding: 0; /* Elimina el padding del botón */
+}
+
+/* Efecto hover y estado activo */
+button.nav-link:hover,
+button.nav-link.active {
+  color: rgb(var(--accent)); /* Mismo color que los enlaces activos */
+  text-decoration: underline; /* Simula un enlace */
+}
+
+/* Opcional: si quieres que los botones tengan el mismo espacio entre elementos */
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
 </style>
 
 <script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    menuToggle?.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navLinks?.classList.toggle('active');
+    });
+  });
+
   // Add scroll effect
   const navbar = document.querySelector('.navbar');
   window.addEventListener('scroll', () => {
@@ -232,4 +256,23 @@ const alternateUrl = getAlternateUrl(currentPath, lang);
       navbar?.classList.remove('scrolled');
     }
   });
+
+  const buttons = document.querySelectorAll('button.nav-link');
+
+  // Maneja los clics en cada botón
+  buttons.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      // Obtiene el valor del atributo `data-url`
+      const url = event.currentTarget.dataset.url;
+
+      // Muestra el valor en la consola
+      console.log("Botón clicado con URL:", url);
+
+      // Opcional: puedes redirigir a la URL almacenada en `data-url`
+      if (url !== undefined) {
+        window.location.href = url;
+      }
+    });
+  });
+  // console.log(window.location.href);
 </script>

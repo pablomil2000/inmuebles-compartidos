@@ -1,0 +1,23 @@
+<button class="alert" data-url="\">¡Haz Click! 1</button>
+<button class="alert" data-url="\properties">¡Haz Click! 2</button>
+
+<script>
+  // Encuentra todos los botones con la clase `alert`
+  const buttons = document.querySelectorAll('button.alert');
+
+  // Maneja los clics en cada botón
+  buttons.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      // Obtiene el valor del atributo `data-url`
+      const url = event.currentTarget.dataset.url;
+
+      // Muestra el valor en la consola
+      console.log("Botón clicado con URL:", url);
+
+      // Opcional: puedes redirigir a la URL almacenada en `data-url`
+      window.location.href = url;
+    });
+  });
+
+  console.log(window.location.href);
+</script>
