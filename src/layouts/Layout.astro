@@ -14,12 +14,27 @@ const lang = pathname.startsWith('/en') ? 'en' : 'es';
 <html lang={lang}>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>Alquileres compartidos</title>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="description" content="Alquileres de pisos e inmuebles en Madrid" />
+
+
+		<meta property="og:title" content="Alquileres compartidos"/>
+		<meta property="og:description" content="Alquileres de pisos e inmuebles en Madrid">
+		<meta property="og:image" content="/favicon.svg">
+		<meta property="og:url" content="https://inmuebles-compartidos.vercel.app/" />
+		<meta property="og:type" content="website"/>
+		<meta property="og:locale" content="es_ES" />
+
+		<meta name="twitter:card" content="summary_large_image"/>
+		<meta name="twitter:site" content="@Pablo_WebDev__"/>
+		<meta name="twitter:site" content="@Pablo_WebDev__"/>
+		<meta name="twitter:title" content="Alquileres compartidos"/>
+		<meta name="twitter:description" content="Alquileres de pisos e inmuebles en Madrid">
+
+
 		<ClientRouter />
 	</head>
 	<body>
