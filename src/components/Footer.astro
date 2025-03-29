@@ -1,0 +1,129 @@
+---
+interface Props {
+  lang: 'es' | 'en';
+}
+
+const { lang } = Astro.props;
+
+const socialLinks = [
+  { icon: 'fa-facebook', href: 'https://facebook.com' },
+  { icon: 'fa-instagram', href: 'https://instagram.com' },
+  { icon: 'fa-twitter', href: 'https://twitter.com' },
+];
+---
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Alquileres Compartidos</h3>
+      <p>Encuentra tu próximo hogar compartido en Madrid</p>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Contacto</h3>
+      <ul>
+        <li><i class="fa fa-envelope"></i> contacto@inmuebles.com</li>
+        <li><i class="fa fa-phone"></i> +34 123 456 789</li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Síguenos</h3>
+      <div class="social-links">
+        {socialLinks.map((link) => (
+          <a href={link.href} target="_blank" rel="noopener noreferrer">
+            <i class={`fa ${link.icon}`}></i>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {new Date().getFullYear()} Alquileres Compartidos. Todos los derechos reservados.</p>
+    <div class="footer-links">
+      <!-- <a href="/politica-privacidad">Política de privacidad</a>
+      <a href="/aviso-legal">Aviso legal</a>
+      <a href="/cookies">Cookies</a> -->
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  .footer {
+    background-color: rgb(var(--background) / 0.95);
+    padding: 4rem 2rem 2rem;
+    margin-top: auto;
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  .footer-section h3 {
+    color: rgb(var(--accent));
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .footer-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .footer-section li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .footer-section i {
+    color: rgb(var(--accent));
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .social-links a {
+    color: rgb(var(--text));
+    transition: color 0.3s ease;
+  }
+
+  .social-links a:hover {
+    color: rgb(var(--accent));
+  }
+
+  .footer-bottom {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(var(--text), 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .footer-links {
+      flex-direction: column;
+    }
+  }
+</style>
