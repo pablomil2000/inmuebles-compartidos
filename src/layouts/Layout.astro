@@ -1,6 +1,8 @@
 ---
 import Navbar from '../components/Navbar.astro';
 import { ClientRouter } from 'astro:transitions';
+import '../styles/globals.css';
+
 interface Props {
 	title?: string;
 }
@@ -16,8 +18,11 @@ const lang = pathname.startsWith('/en') ? 'en' : 'es';
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<title>Alquileres compartidos</title>
+
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="stylesheet" href="/">
+		
 		<meta name="description" content="Alquileres de pisos e inmuebles en Madrid" />
 
 

@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "Anisette";
+  src: url("./fonts/Anisette-Medium.otf") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Anisette";
+  src: url("./fonts/Anisette-Bold.otf") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+body {
+  font-family: "Anisette", sans-serif;
+}
